@@ -105,31 +105,34 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
 			playArea4.setPreferredSize(new Dimension(130, 150));
 	   		playArea4.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			center.add(playArea4);
+
+			Stack<Card> testStack = new Stack<Card>();
+			testStack.add(new Card(2, Card.Suit.Diamonds));
+			testStack.add(new Card(5, Card.Suit.Diamonds));
+			playArea1.setLayout(new FlowLayout());
+			playArea1.add(drawPile(testStack));
 		this.setVisible(true);
 
 		}
 
-		    public JLayeredPane drawPile(Stack<Card> stackIn) {
+		public JLayeredPane drawPile(Stack<Card> stackIn) {
 				JLayeredPane pane = new JLayeredPane();
-				final int CARD_W = 100;
-				final int CARD_H = 145;
-				final int OFFSET_Y = 30; // vertical overlap offset
 
-				Object[] cards = stackIn.toArray(); // no extra '{' here
-				// bottom-of-stack is index 0 for a Stack (Vector)FSET_Y * (cards.length - 1);
-				pane.setPreferredSize(new Dimension(CARD_W, CARD_H + OFFSET_Y * (cards.length - 1)));
-				pane.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				Object[] cards = stackIn.toArray(); 
+				pane.setPreferredSize(new Dimension(130, 150));
+				pane.setBorder(BorderFactory.createLineBorder(Color.red));
 				for (int i = 0; i < cards.length; i++) {
 					Card c = (Card) cards[i]; // cast each element back to Card
 					int x = 0;
-					int y = i * OFFSET_Y;
-					c.setBounds(x, y, CARD_W, CARD_H);
+					int y = i * 30;
+					c.setBounds(x, y, 130, 150);
 					pane.add(c, Integer.valueOf(i));
 				}
-
+				
 				return pane;
-			
 		}
+			
+			
 	   
 			
 
@@ -143,7 +146,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
        //System.out.println(card);
        //this.add(card);    
 
-        this.setVisible(true);
+        
     
 
 
