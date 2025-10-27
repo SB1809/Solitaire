@@ -114,7 +114,17 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
 		this.setVisible(true);
 
 		}
-
+		
+		/* 
+		Preconditions: stackIn != null and every element in stackIn is non-null and is a Card
+		Postconditions: a non-null JLayeredPane is returned Such that:
+   			- pane.getComponentCount() == stackIn.size()
+   			- for each index i in [0, stackIn.size()-1]:
+      			- the i-th component in the pane is the same Card object that was the i-th element of stackIn
+       			- that Card has bounds (x=0, y=i*30, width=130, height=150)
+       			- the Card was added at layer Integer.valueOf(i)
+   			- the input stackIn is not modified by this method
+ 		*/
 		public JLayeredPane drawPile(Stack<Card> stackIn) {
 				JLayeredPane pane = new JLayeredPane();
 
