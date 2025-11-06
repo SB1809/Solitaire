@@ -17,13 +17,16 @@ import java.util.Stack;
 public class GUI extends JFrame implements ActionListener, MouseListener, MouseMotionListener{
 private Card card1;
 private Card card2;
-	Durak game;
+Durak game;
 	
 JPanel south;
 JPanel north;
 JPanel east;
-JPanel west;
+JPanel west; //deck area
 JPanel center;
+
+JPanel playerOne;
+JPanel playerTwo;
 
 private JLabel trumpLabel;
 
@@ -55,7 +58,7 @@ private JLabel trumpLabel;
        		south = new JPanel(new BorderLayout());
        		south.setOpaque(false);
     		south.setPreferredSize(new Dimension(0, 150));
-       		JPanel playerOne = new JPanel();
+       		playerOne = new JPanel();
        		playerOne.setOpaque(false);
        		playerOne.setPreferredSize(new Dimension(600, 120));
        		playerOne.add(new JLabel("Player One"));
@@ -67,7 +70,7 @@ private JLabel trumpLabel;
             north = new JPanel(new BorderLayout());
             north.setOpaque(false);
             north.setPreferredSize(new Dimension(0, 150));
-            JPanel playerTwo = new JPanel();
+            playerTwo = new JPanel();
             playerTwo.setOpaque(false);
             playerTwo.setPreferredSize(new Dimension(600, 120));
             playerTwo.add(new JLabel("Player Two"));
@@ -131,7 +134,7 @@ private JLabel trumpLabel;
 			// playArea1.add(drawPile(testStack));
 
 			this.setVisible(true);
-
+			updateDisplay();
 		}
 
 
@@ -180,7 +183,15 @@ private JLabel trumpLabel;
 
 	   private void updateDisplay() {
     		if (game == null) return;
-
+			west.removeAll();
+			west.add(new JLabel("Deck"));
+			Stack<Card> deckPile= new Stack();
+			
+			deckPile.add(game.getTopDeckCard());
+			game.getTrumpCard().show();
+	
+			deckPile.add(game.getTrumpCard());
+			west.add(drawPile(deckPile));
     	}
     
         

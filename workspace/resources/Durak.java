@@ -56,6 +56,10 @@ public class Durak {
 		deck = new LinkedList<>(temp);
 	}
 
+	public Card getTopDeckCard(){
+		return deck.poll();
+	}
+
 	public Card drawCard() {
         return deck.poll();
     }
