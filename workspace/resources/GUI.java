@@ -127,7 +127,7 @@ private JLabel trumpLabel;
 	   		playArea4.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			center.add(playArea4);
 
-			Stack<Card> testStack = new Stack<Card>();
+			//Stack<Card> testStack = new Stack<Card>();
 			// testStack.add(new Card(2, Card.Suit.Diamonds));
 			// testStack.add(new Card(5, Card.Suit.Diamonds));
 			// playArea1.setLayout(new FlowLayout());
@@ -157,26 +157,6 @@ private JLabel trumpLabel;
 				return pane;
 		}
 			
-
-	// 	private String suitToSymbol(Card.Suit s) {
-    //     if (s == null) return "";
-    //     switch (s) {
-    //         case Hearts:   return "♥";
-    //         case Spades:   return "♠";
-    //         case Diamonds: return "♦";
-    //         case Clubs:    return "♣";
-    //         default:       return "?";
-    //     }
-    // }
-
-    // private Color suitToColor(Card.Suit s) {
-    //     if (s == null) return Color.BLACK;
-    //     switch (s) {
-    //         case Hearts: case Diamonds: return Color.RED;
-    //         case Spades: case Clubs:    return Color.BLACK;
-    //         default: return Color.BLACK;
-    //     }
-    // }
 			
 
 
@@ -186,11 +166,11 @@ private JLabel trumpLabel;
 			west.removeAll();
 			west.add(new JLabel("Deck"));
 			Stack<Card> deckPile= new Stack();
-			
-			deckPile.add(game.getTopDeckCard());
 			game.getTrumpCard().show();
-	
+			game.getTrumpCard().setRotationDegrees(90);
+			game.getTrumpCard().setBounds(0, 0, 150, 130);
 			deckPile.add(game.getTrumpCard());
+			deckPile.add(game.getTopDeckCard());
 			west.add(drawPile(deckPile));
     	}
     

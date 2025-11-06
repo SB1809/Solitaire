@@ -24,7 +24,7 @@ public class Card extends JPanel{
 		private BufferedImage backImage;
 		boolean isReversed;
 		Point positionOffset;
-		
+		private double rotationDegrees = 0.0;
 		/**
 		 * Enum to store the suit values
 		 */
@@ -136,7 +136,35 @@ public class Card extends JPanel{
 			BufferedImage img = image;
 			if(isReversed) img = backImage;
 
+
+			Graphics2D g2 = (Graphics2D) g.create();
+    		int w = getWidth();
+    		int h = getHeight();
+
+    		// rotate about the center
+    		double theta = Math.toRadians(rotationDegrees);
+    		g2.rotate(theta, w / 2.0, h / 2.0);
+
+    		// draw the image scaled to the component bounds
+    		g2.drawImage(img, 0, 0, w, h, null);
+    		g2.dispose();
+
+
 			g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), null);
+		}
+
+
+		
+
+		public void setRotationDegrees(double degrees) {
+    		this.rotationDegrees = degrees % 360.0;
+    		// swap preferred size if rotated by 90 or 270 to avoid clipping (optional)
+    		if ((int)Math.abs(rotationDegrees) % 180 == 90) {
+        		Dimension d = getPreferredSize();
+        		setPreferredSize(new Dimension(d.height, d.width));
+    		}
+    		revalidate();
+    		repaint();
 		}
 	
 }

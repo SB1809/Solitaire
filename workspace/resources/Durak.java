@@ -39,7 +39,7 @@ public class Durak {
 	private void Deck() {
         ArrayList<Card> temp = new ArrayList<>();
         for (Card.Suit suit : Card.Suit.values()) {
-            for (int value = 1; value <= 13; value++) {
+            for (int value = 6; value <=13; value++) {
                 // Create card images will be loaded in Card constructor
 				Card c = new Card(value, suit);
 				c.hide();
