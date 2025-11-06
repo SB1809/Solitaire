@@ -15,8 +15,20 @@ import java.util.Stack;
 
 
 public class GUI extends JFrame implements ActionListener, MouseListener, MouseMotionListener{
-
+private Card card1;
+private Card card2;
 	Durak game;
+	
+JPanel south;
+JPanel north;
+JPanel east;
+JPanel west;
+JPanel center;
+
+private JLabel trumpLabel;
+
+
+
     public GUI(Durak game){
 	   this.game= game;
         //Create and set up the window.
@@ -40,7 +52,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
    			cp.setLayout(new BorderLayout());
 
 			// SOUTH: Player One (local player) hand area information
-       		JPanel south = new JPanel(new BorderLayout());
+       		south = new JPanel(new BorderLayout());
        		south.setOpaque(false);
     		south.setPreferredSize(new Dimension(0, 150));
        		JPanel playerOne = new JPanel();
@@ -52,7 +64,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
        		cp.add(south, BorderLayout.SOUTH);
 
 			// NORTH: Player Two area (opponent) information
-            JPanel north = new JPanel(new BorderLayout());
+            north = new JPanel(new BorderLayout());
             north.setOpaque(false);
             north.setPreferredSize(new Dimension(0, 150));
             JPanel playerTwo = new JPanel();
@@ -64,7 +76,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
             cp.add(north, BorderLayout.NORTH);
 
 			// EAST: Graveyard information
-            JPanel east = new JPanel(new BorderLayout());
+            east = new JPanel(new BorderLayout());
             east.setLayout(new BoxLayout(east, BoxLayout.Y_AXIS));
             east.setPreferredSize(new Dimension(160, 0));
             east.add(new JLabel("Graveyard"));
@@ -72,15 +84,21 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
             cp.add(east, BorderLayout.EAST);
 
 			// West: Deck information
-            JPanel west = new JPanel(new BorderLayout());
+            west = new JPanel(new BorderLayout());
             west.setLayout(new BoxLayout(west, BoxLayout.Y_AXIS));
             west.setPreferredSize(new Dimension(160, 0));
             west.add(new JLabel("Deck"));
 			west.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             cp.add(west, BorderLayout.WEST);
+			trumpLabel = new JLabel("", SwingConstants.CENTER);
+            trumpLabel.setPreferredSize(new Dimension(160, 60));
+            trumpLabel.setFont(new Font("Serif", Font.BOLD, 36));
+            west.add(trumpLabel);
+			
+
 
 			// CENTER: play area information
-            JPanel center = new JPanel();
+            center = new JPanel();
             center.setPreferredSize(new Dimension(800, 400)); // workspace for table
             center.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 			center.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -107,27 +125,20 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
 			center.add(playArea4);
 
 			Stack<Card> testStack = new Stack<Card>();
-			testStack.add(new Card(2, Card.Suit.Diamonds));
-			testStack.add(new Card(5, Card.Suit.Diamonds));
-			playArea1.setLayout(new FlowLayout());
-			playArea1.add(drawPile(testStack));
-		this.setVisible(true);
+			// testStack.add(new Card(2, Card.Suit.Diamonds));
+			// testStack.add(new Card(5, Card.Suit.Diamonds));
+			// playArea1.setLayout(new FlowLayout());
+			// playArea1.add(drawPile(testStack));
+
+			this.setVisible(true);
 
 		}
-		
-		/* 
-		Preconditions: stackIn != null and every element in stackIn is non-null and is a Card
-		Postconditions: a non-null JLayeredPane is returned Such that:
-   			- pane.getComponentCount() == stackIn.size()
-   			- for each index i in [0, stackIn.size()-1]:
-      			- the i-th component in the pane is the same Card object that was the i-th element of stackIn
-       			- that Card has bounds (x=0, y=i*30, width=130, height=150)
-       			- the Card was added at layer Integer.valueOf(i)
-   			- the input stackIn is not modified by this method
- 		*/
+
+
+
+
 		public JLayeredPane drawPile(Stack<Card> stackIn) {
 				JLayeredPane pane = new JLayeredPane();
-
 				Object[] cards = stackIn.toArray(); 
 				pane.setPreferredSize(new Dimension(130, 150));
 				pane.setBorder(BorderFactory.createLineBorder(Color.red));
@@ -137,13 +148,43 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
 					int y = i * 30;
 					c.setBounds(x, y, 130, 150);
 					pane.add(c, Integer.valueOf(i));
+					//cards[i].addMouseListener(this);
 				}
 				
 				return pane;
 		}
 			
+
+	// 	private String suitToSymbol(Card.Suit s) {
+    //     if (s == null) return "";
+    //     switch (s) {
+    //         case Hearts:   return "♥";
+    //         case Spades:   return "♠";
+    //         case Diamonds: return "♦";
+    //         case Clubs:    return "♣";
+    //         default:       return "?";
+    //     }
+    // }
+
+    // private Color suitToColor(Card.Suit s) {
+    //     if (s == null) return Color.BLACK;
+    //     switch (s) {
+    //         case Hearts: case Diamonds: return Color.RED;
+    //         case Spades: case Clubs:    return Color.BLACK;
+    //         default: return Color.BLACK;
+    //     }
+    // }
 			
-	   
+
+
+
+	   private void updateDisplay() {
+    		if (game == null) return;
+
+    	}
+    
+        
+    
 			
 
 
@@ -158,43 +199,62 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
 
         
     
-
-
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void mousePressed(MouseEvent arg0) {
+
+        if(card1==null){
+
+             card1 = ((Card)arg0.getComponent());
+
+             card1.setBorder(BorderFactory.createMatteBorder(1, 5, 1, 1, Color.red));
+
+         }
+
+         else {
+
+             card2 = ((Card)arg0.getComponent());
+
+              //rest of your logic here including checking to make sure if the move is legal, checking if the game is over and updating the screen.
+			//if(!game.isGameOver()){
+				
+			}
+              card1 = null; // reset the card variables so you're ready for another move
+
+              card2 = null;
+
+    }
+
+
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
@@ -207,5 +267,28 @@ public class GUI extends JFrame implements ActionListener, MouseListener, MouseM
 		// TODO Auto-generated method stub
 		
 	}
-}
+	// private void update(){
+	// 	columns.removeAll();
+	// 	topColumns.removeAll();
 
+	// 	ArrayList<Stack<Card>> allColumns = game.getColumns();
+	// 	for(Stack<Card> stack:allColumns){
+	// 		topColumns.add(drawPile(stack,false));
+	// 	}
+	// 	columns.add(drawDeck(game.getDeck()));
+
+	// 	columns.add(drawPile(game.getPile(), true));
+
+	// 	columns.add(drawFinal(game.hearts, "hearts"));
+
+	// 	columns.add(drawFinal(game.spades, "spades"));
+
+	// 	columns.add(drawFinal(game.diamonds, "diamonds"));
+
+	// 	columns.add(drawFinal(game.clubs, "clubs"));
+
+	// 	System.out.println("updating");
+	// 	this.revalidate();
+    // 	this.repaint();
+	// }
+}
