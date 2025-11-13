@@ -163,7 +163,7 @@ public class Durak {
 
 
     public boolean canDefend(Card attack, Card defense) {
-        if (attack == null || defense == null) return false;
+        // if (attack == null || defense == null) return false;
 
         Card.Suit trump = getTrumpSuit();
 
@@ -181,13 +181,12 @@ public class Durak {
     }
 
 
-    // public boolean canAttackWith(Card card, java.util.Collection<Integer> tableRanks) {
-    //     if (card == null) return false;
-    //     if (tableRanks == null || tableRanks.isEmpty()) return true;
-
-    //     int r = card.value; // change to card.getValue() if needed
-    //     return tableRanks.contains(r);
-    // }
+    public boolean canAttackWith(Card card){
+        if(card == null) return false;
+        // In Durak, any card can be used to attack
+        return true;
+    }
+    
 
 
 
@@ -212,6 +211,7 @@ public class Durak {
                     if (column.peek().equals(c2)) {
                         column.push(c1);
                         hand1.remove(c1);
+                        
                         break;
                     }
                 }

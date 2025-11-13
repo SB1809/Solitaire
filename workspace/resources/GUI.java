@@ -287,16 +287,17 @@ private JButton endTurn;
         if(card1==null){
              card1 = selectedCard;
              card1.setBorder(BorderFactory.createMatteBorder(1, 5, 1, 1, Color.red));
+			 repaint();
 			 return;
          }
 
          else {
-
+			
 		
              card2 = selectedCard;
 
 			game.doMove(card1, card2);
-
+			System.out.println("do move");
 				updateDisplay();
 				
 			}
