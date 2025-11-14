@@ -14,6 +14,7 @@ public class Durak {
 	boolean isAttacking=true;
     boolean loser;
 
+    
 	//if any player hand is zero, game over
     private ArrayList<Card> hand1;
     private ArrayList<Card> hand2;
@@ -194,13 +195,16 @@ public class Durak {
         // Determine which hand c1 came from
         boolean c1InHand1 = hand1.contains(c1);
         boolean c1InHand2 = hand2.contains(c1);
-        
+        System.out.println("c1InHand1: " + c1InHand1 + ", c1InHand2: " + c1InHand2);
+
         if (isAttacking && c1InHand1) {
         // Attack: place c1 on the table
         Stack<Card> column = new Stack<>();
         column.push(c1);
         columns.add(column);
         hand1.remove(c1);
+        System.out.println("Player 1 attacked with " + c1);
+        return;
         }
         // If it's player 1's defending turn (not attacking)
         else if (!isAttacking && c1InHand1 && c2 != null) {
@@ -211,7 +215,6 @@ public class Durak {
                     if (column.peek().equals(c2)) {
                         column.push(c1);
                         hand1.remove(c1);
-                        
                         break;
                     }
                 }
@@ -225,6 +228,7 @@ public class Durak {
             column.push(c1);
             columns.add(column);
             hand2.remove(c1);
+            return;
         }
         else if (!isAttacking && c1InHand2 && c2 != null) {
             // Player 2 defending

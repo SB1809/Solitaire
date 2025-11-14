@@ -64,6 +64,9 @@ private JButton endTurn;
     	   e.printStackTrace();
        }
 	   
+	   for(Card c: game.deck){
+		c.addMouseListener(this);
+	   }
 	
     		Container cp = getContentPane();
    			cp.setLayout(new BorderLayout());
@@ -144,22 +147,19 @@ private JButton endTurn;
    			
 	   		//cards in flow layout - 4 layered panes in center panel
 			center.setLayout(new FlowLayout());
-			JLayeredPane playArea1 = new JLayeredPane();
-			playArea1.setPreferredSize(new Dimension(120, 170));
-	   		playArea1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			center.add(playArea1);
-			JLayeredPane playArea2 = new JLayeredPane();
-			playArea2.setPreferredSize(new Dimension(120, 170));
-	   		playArea2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			center.add(playArea2);
-			JLayeredPane playArea3 = new JLayeredPane();
-			playArea3.setPreferredSize(new Dimension(120, 170));
-	   		playArea3.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			center.add(playArea3);
-			JLayeredPane playArea4 = new JLayeredPane();
-			playArea4.setPreferredSize(new Dimension(120, 170));
-	   		playArea4.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			center.add(playArea4);
+			
+			// JLayeredPane playArea2 = new JLayeredPane();
+			// playArea2.setPreferredSize(new Dimension(120, 170));
+	   		// playArea2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			// center.add(playArea2);
+			// JLayeredPane playArea3 = new JLayeredPane();
+			// playArea3.setPreferredSize(new Dimension(120, 170));
+	   		// playArea3.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			// center.add(playArea3);
+			// JLayeredPane playArea4 = new JLayeredPane();
+			// playArea4.setPreferredSize(new Dimension(120, 170));
+	   		// playArea4.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			// center.add(playArea4);
 
 			//Stack<Card> testStack = new Stack<Card>();
 			// testStack.add(new Card(2, Card.Suit.Diamonds));
@@ -183,10 +183,10 @@ private JButton endTurn;
 					Card c = (Card) cards[i]; // cast each element back to Card
 					int x = 0;
 					int y = i * 35;
-					System.out.println(c);
-					c.setBounds(x, y, 130, 150);
+					
+					c.setBounds(x, y, 120, 170);
 					pane.add(c, Integer.valueOf(i));
-					//cards[i].addMouseListener(this);
+			
 				}
 				
 				return pane;
@@ -228,9 +228,23 @@ private JButton endTurn;
 
 			boolean southFaceUp = viewHandsButtonSouth != null && viewHandsButtonSouth.isSelected();
             boolean northFaceUp = viewHandsButtonNorth != null && viewHandsButtonNorth.isSelected();
-			System.out.println(northFaceUp);
+			
             renderPlayerHand(game.getHand1(), playerOne, southFaceUp);
             renderPlayerHand(game.getHand2(), playerTwo, northFaceUp);
+			center.removeAll();
+			for(Stack<Card> stack:game.getColumns()){
+				JLayeredPane playArea = new JLayeredPane();
+				playArea.setPreferredSize(new Dimension(120, 170));
+				playArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				int yoffset=0;
+				for(Card c: stack){
+					c.setBounds(0, yoffset, 120, 170);
+					playArea.add(c);
+					yoffset+=50;
+				}
+				
+				center.add(playArea);
+			}
 			
     	}
     
@@ -281,12 +295,12 @@ private JButton endTurn;
 	}
 
 	@Override
-    public void mousePressed(MouseEvent arg0) {
+    public void mouseReleased(MouseEvent arg0) {
 		Card selectedCard = (Card)arg0.getComponent();
 
         if(card1==null){
              card1 = selectedCard;
-             card1.setBorder(BorderFactory.createMatteBorder(1, 5, 1, 1, Color.red));
+             card1.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.red));
 			 repaint();
 			 return;
          }
@@ -309,7 +323,7 @@ private JButton endTurn;
 
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
+	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
