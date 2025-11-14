@@ -189,7 +189,9 @@ public class Durak {
     //     return tableRanks.contains(r);
     // }
 
-
+    public void endTurn(){
+        
+    }
 
     public void doMove(Card c1, Card c2){
         // Determine which hand c1 came from
@@ -199,6 +201,7 @@ public class Durak {
         if (isAttacking && c1InHand1) {
         // Attack: place c1 on the table
         Stack<Card> column = new Stack<>();
+        c1.show();
         column.push(c1);
         columns.add(column);
         hand1.remove(c1);
