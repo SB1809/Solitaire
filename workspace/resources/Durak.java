@@ -190,7 +190,7 @@ public class Durak {
     // }
 
     public void endTurn(){
-        
+        isAttacking=!isAttacking;
     }
 
     public void doMove(Card c1, Card c2){
