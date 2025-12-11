@@ -9,9 +9,11 @@ import java.util.Stack;
 public class Durak {
 	ArrayList<Stack <Card>> columns;
 	Queue<Card> deck;
-	boolean isGameOver=false;
-    //Is player 1's attacking turn
-	boolean isAttacking=true;
+	ArrayList<Card> graveyard;
+	boolean isGameOver = false;
+    //Is player 1 attacking? When true, P1 attacks and P2 defends. When false, P2 attacks and P1 defends.
+	boolean isPlayer1Attacking = true;
+    boolean turn;
     boolean loser;
 
     
@@ -28,6 +30,21 @@ public class Durak {
         return java.util.Collections.unmodifiableList(hand2);
     }
 
+	public java.util.List<Card> getGraveyard() {
+        return java.util.Collections.unmodifiableList(graveyard);
+    }
+
+	public boolean isPlayer1Attacking() {
+		return isPlayer1Attacking;
+	}
+
+	public int getAttackingPlayer() {
+		return isPlayer1Attacking ? 1 : 2;
+	}
+
+	public int getDefendingPlayer() {
+		return isPlayer1Attacking ? 2 : 1;
+	}
 
 	private Card trumpCard;
 
@@ -42,13 +59,14 @@ public class Durak {
         columns = new ArrayList<>();
         hand1 = new ArrayList<>();
         hand2 = new ArrayList<>();
+        graveyard = new ArrayList<>();
         deck = new LinkedList<>();
 
         Deck();
         shuffleDeck();
         pickTrump();          // sets trumpCard (bottom card of deck)
         dealInitialHands(6);
-		
+		//shortCutEnd();
     }
 
 
@@ -76,8 +94,10 @@ public class Durak {
 		return deck.peek();
 	}
 
-	public Card drawCard() {
-        return deck.poll();
+    public void shortCutEnd(){
+        for(int i=0; i<20; i++){
+            deck.poll();
+        }
     }
 
 	private void pickTrump() {
@@ -85,9 +105,9 @@ public class Durak {
 			trumpCard = null;
 			return;
 		}
-		// Convert queue to list to access the last element
+		
 		ArrayList<Card> list = new ArrayList<>(deck);
-		trumpCard = list.get(list.size() - 1); // bottom card is trump (visible)
+		trumpCard = list.get(list.size() - 1); // bottom card is trump 
 	}
 
 	
@@ -138,17 +158,7 @@ public class Durak {
 
 
 
-	// public java.util.List<Card> drawToHand(java.util.List<Card> hand, int count) {
-    //     java.util.List<Card> drawn = new java.util.ArrayList<>();
-    //     for (int i = 0; i < count && !deck.isEmpty(); i++) {
-    //         Card c = deck.poll();
-    //         if (c != null) {
-    //             hand.add(c);
-    //             drawn.add(c);
-    //         }
-    //     }
-    //     return drawn;
-    // }
+
 
 
 	public void replenishHandsTo(int targetSize) {
@@ -169,8 +179,8 @@ public class Durak {
         Card.Suit trump = getTrumpSuit();
 
         // assume Card has int field 'value' and Card.Suit field 'suit'
-        int aRank = attack.value;    // change to attack.getValue() if you have a getter
-        int dRank = defense.value;   // change to defense.getValue() if you have a getter
+        int aRank = attack.value;    
+        int dRank = defense.value;   
 
         // same suit, higher rank
         if (defense.suit == attack.suit && dRank > aRank) return true;
@@ -182,78 +192,166 @@ public class Durak {
     }
 
 
-    public boolean canAttackWith(Card card){
+    public boolean isAttacking(Card card){
         if(card == null) return false;
+        
         // In Durak, any card can be used to attack
         return true;
     }
+
+    public boolean canEndTurn(){
+            for (Stack<Card> column : columns) {
+                if(column.size() != 2){
+                    return false;
+                }
+            }
+            return true;
+    }
+
     
+    public void endTurn(){
+        // Move all cards from table to graveyard
+        for (Stack<Card> column : columns) {
+            while (!column.isEmpty() && canEndTurn()) {
+                graveyard.add(column.pop());
+            }
+        }
+
+      
+
+        // Clear the table
+        columns.clear();
+        // Switch turns
+        isPlayer1Attacking = !isPlayer1Attacking;
+        // Replenish hands
+        replenishHandsTo(6);
+        // Check for game over
+        gameOver();
+    }
+
+    public void defenderTakesCards() {
+        // Defender takes all cards from the table into their hand
+        ArrayList<Card> defendingHand = isPlayer1Attacking ? hand2 : hand1;
+        
+        for (Stack<Card> column : columns) {
+            while (!column.isEmpty()) {
+                defendingHand.add(column.pop());
+            }
+        }
+        columns.clear();
+        // Switch turns
+        isPlayer1Attacking = !isPlayer1Attacking;
+        // Replenish hands
+        replenishHandsTo(6);
+        // Check for game over
+        gameOver();
+    }
+
+    public boolean isValidAttackCard(Card card) {
+        // First card can be anything, subsequent cards must match values on table
+        if (columns.isEmpty()) {
+            return true;  // First attack card
+        }
+        
+        // Get all values currently on the table
+        ArrayList<Integer> tableValues = new ArrayList<>();
+        for (Stack<Card> column : columns) {
+            if (!column.isEmpty()) {
+                tableValues.add(column.peek().value);  // Get top card value
+            }
+        }
+        
+        // Attack card must match one of the values on the table
+        return tableValues.contains(card.value);
+    }
 
 
 
-    public void doMove(Card c1, Card c2){
+
+    public void doMove(Card c1, Card c2) {
         // Determine which hand c1 came from
         boolean c1InHand1 = hand1.contains(c1);
         boolean c1InHand2 = hand2.contains(c1);
-        System.out.println("c1InHand1: " + c1InHand1 + ", c1InHand2: " + c1InHand2);
-
-        if (isAttacking && c1InHand1) {
-        // Attack: place c1 on the table
-        Stack<Card> column = new Stack<>();
-        column.push(c1);
-        columns.add(column);
-        hand1.remove(c1);
-        System.out.println("Player 1 attacked with " + c1);
-        return;
-        }
-        // If it's player 1's defending turn (not attacking)
-        else if (!isAttacking && c1InHand1 && c2 != null) {
-            // Defense: c1 defends against c2 (the attack card)
-            if (canDefend(c2, c1)) {
-                // Find the column with c2 and add c1 as defense
-                for (Stack<Card> column : columns) {
-                    if (column.peek().equals(c2)) {
-                        column.push(c1);
-                        hand1.remove(c1);
-                        break;
-                    }
+        
+        // Determine if c2 is an attack card on the table
+        boolean isCard2OnTable = false;
+        if (c2 != null) {
+            for (Stack<Card> column : columns) {
+                if (column.contains(c2)) {
+                    isCard2OnTable = true;
+                    break;
                 }
             }
         }
 
-        // If it's player 2's turn
-        else if (isAttacking && c1InHand2) {
-            // Player 2 attacking: place c1 on table
+        // If Player 1 is attacking
+        if (isPlayer1Attacking && c1InHand1) {
+            // Validate that attack card is valid
+            if (!isValidAttackCard(c1)) {
+                System.out.println("Invalid attack! Card value must match cards on table.");
+                return;
+            }
+            // Player 1 attacks with c1 (c2 will be null for new attacks)
             Stack<Card> column = new Stack<>();
             column.push(c1);
             columns.add(column);
-            hand2.remove(c1);
+            hand1.remove(c1);
+            System.out.println("Player 1 attacked with " + c1);
             return;
         }
-        else if (!isAttacking && c1InHand2 && c2 != null) {
-            // Player 2 defending
+        
+        // If Player 1 is attacking, Player 2 must defend
+        if (isPlayer1Attacking && c1InHand2 && c2 != null && isCard2OnTable) {
+            // Player 2 defends against c2 (the attack card) with c1
             if (canDefend(c2, c1)) {
                 for (Stack<Card> column : columns) {
                     if (column.peek().equals(c2)) {
                         column.push(c1);
                         hand2.remove(c1);
-                        break;
+                        System.out.println("Player 2 defended with " + c1);
+                        return;
                     }
                 }
+            } else {
+                System.out.println("Invalid defense!");
             }
+            return;
         }
-            //determine the type of move
-            //find where the cards came from
-
-            // c1 is in hand 1 and it's p1's turn then c2 doesn't matter and we do the move
-
-            //move cards where they are supposed to be.
+        
+        // If Player 2 is attacking
+        if (!isPlayer1Attacking && c1InHand2) {
+            // Validate that attack card is valid
+            if (!isValidAttackCard(c1)) {
+                System.out.println("Invalid attack! Card value must match cards on table.");
+                return;
+            }
+            // Player 2 attacks with c1 (c2 will be null for new attacks)
+            Stack<Card> column = new Stack<>();
+            column.push(c1);
+            columns.add(column);
+            hand2.remove(c1);
+            System.out.println("Player 2 attacked with " + c1);
+            return;
         }
-
-    //Attack shit
-
-    //how do i ame it so that I could move the cards to the center layerpanes.
-    //Attaker can put up to 4 of the same value cards. we are making an easier version of the game
+        
+        // If Player 2 is attacking, Player 1 must defend
+        if (!isPlayer1Attacking && c1InHand1 && c2 != null && isCard2OnTable) {
+            // Player 1 defends against c2 (the attack card) with c1
+            if (canDefend(c2, c1)) {
+                for (Stack<Card> column : columns) {
+                    if (column.peek().equals(c2)) {
+                        column.push(c1);
+                        hand1.remove(c1);
+                        System.out.println("Player 1 defended with " + c1);
+                        return;
+                    }
+                }
+            } else {
+                System.out.println("Invalid defense!");
+            }
+            return;
+        }
+    }
 
 
 	

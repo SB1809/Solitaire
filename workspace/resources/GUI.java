@@ -19,11 +19,11 @@ private Card card1;
 private Card card2;
 Durak game;
 	
-JPanel south;
-JPanel north;
-JPanel east;
+JPanel south; // player one hand
+JPanel north; // player two hand
+JPanel east; // graveyard area
 JPanel west; //deck area
-JPanel center;
+JPanel center; // play area
 
 JPanel playerOne;
 JPanel playerTwo;
@@ -33,14 +33,20 @@ private static final int CARD_WIDTH = 120;
 private static final int CARD_HEIGHT = 150;
 private static final int HAND_OVERLAP = CARD_WIDTH / 4;
 
+private boolean dumfixer = false;
 
 
 private JLabel trumpLabel;
 private JLabel endGame;
+private JLabel turnIndicator; // shows whose turn it is
+private JPanel graveyardPanel;
 
 private JToggleButton viewHandsButtonSouth;
 private JToggleButton viewHandsButtonNorth;
 private JButton endTurn;
+private JButton takeCardsSouth;
+private JButton takeCardsNorth;
+
 
 
 
@@ -79,15 +85,27 @@ private JButton endTurn;
        		playerOne.setOpaque(false);
        		playerOne.setPreferredSize(new Dimension(600, 120));
        		playerOne.add(new JLabel("Player One"));
-       		south.add(playerOne);
+       		south.add(playerOne, BorderLayout.CENTER);
 			south.setBorder(BorderFactory.createLineBorder(Color.BLACK));
        		cp.add(south, BorderLayout.SOUTH);
 
-
+    		// Button panel for south
+    		JPanel southButtonPanel = new JPanel();
+    		southButtonPanel.setLayout(new BoxLayout(southButtonPanel, BoxLayout.Y_AXIS));
+    		southButtonPanel.setOpaque(false);
+    		southButtonPanel.setPreferredSize(new Dimension(120, 0));
+    		
 	   		viewHandsButtonSouth = new JToggleButton("Show Hands");
             viewHandsButtonSouth.setToolTipText("Toggle to show/hide both players' hands");
             viewHandsButtonSouth.addActionListener(this);
-            south.add(viewHandsButtonSouth, BorderLayout.EAST);
+            southButtonPanel.add(viewHandsButtonSouth);
+            
+            takeCardsSouth = new JButton("Take Cards");
+            takeCardsSouth.setToolTipText("Take all cards from the table (defender only)");
+            takeCardsSouth.addActionListener(this);
+            southButtonPanel.add(takeCardsSouth);
+            
+            south.add(southButtonPanel, BorderLayout.EAST);
 
 
 			// NORTH: Player Two area (opponent) information
@@ -98,14 +116,27 @@ private JButton endTurn;
             playerTwo.setOpaque(false);
             playerTwo.setPreferredSize(new Dimension(600, 120));
             playerTwo.add(new JLabel("Player Two"));
-            north.add(playerTwo);
+            north.add(playerTwo, BorderLayout.CENTER);
 			north.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             cp.add(north, BorderLayout.NORTH);
 
+            // Button panel for north
+            JPanel northButtonPanel = new JPanel();
+            northButtonPanel.setLayout(new BoxLayout(northButtonPanel, BoxLayout.Y_AXIS));
+            northButtonPanel.setOpaque(false);
+            northButtonPanel.setPreferredSize(new Dimension(120, 0));
+            
 	   		viewHandsButtonNorth = new JToggleButton("Show Hands");
             viewHandsButtonNorth.setToolTipText("Toggle to show/hide both players' hands");
             viewHandsButtonNorth.addActionListener(this);
-            north.add(viewHandsButtonNorth, BorderLayout.EAST);
+            northButtonPanel.add(viewHandsButtonNorth);
+            
+            takeCardsNorth = new JButton("Take Cards");
+            takeCardsNorth.setToolTipText("Take all cards from the table (defender only)");
+            takeCardsNorth.addActionListener(this);
+            northButtonPanel.add(takeCardsNorth);
+            
+            north.add(northButtonPanel, BorderLayout.EAST);
 
 
 			// EAST: Graveyard information
@@ -113,12 +144,26 @@ private JButton endTurn;
             east.setLayout(new BoxLayout(east, BoxLayout.Y_AXIS));
             east.setPreferredSize(new Dimension(160, 0));
             east.add(new JLabel("Graveyard"));
-			east.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            
+            graveyardPanel = new JPanel();
+            graveyardPanel.setLayout(new FlowLayout(FlowLayout.CENTER, -HAND_OVERLAP, 0));
+            graveyardPanel.setOpaque(false);
+            graveyardPanel.setPreferredSize(new Dimension(160, 150));
+            east.add(graveyardPanel);
+            
+            turnIndicator = new JLabel("Player 1 Attacking", SwingConstants.CENTER);
+            turnIndicator.setPreferredSize(new Dimension(160, 30));
+            turnIndicator.setFont(new Font("Serif", Font.BOLD, 12));
+            east.add(turnIndicator);
+			
 			endTurn = new JButton("End Turn");
 			endTurn.setOpaque(false);
-			endTurn.setPreferredSize(new Dimension(20,20));
+			endTurn.setPreferredSize(new Dimension(160, 30));
 			endTurn.addActionListener(this);
-			east.add(endTurn, BorderLayout.SOUTH);
+			east.add(endTurn);
+            
+            
+			east.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             cp.add(east, BorderLayout.EAST);
 
 			// West: Deck information
@@ -148,24 +193,7 @@ private JButton endTurn;
 	   		//cards in flow layout - 4 layered panes in center panel
 			center.setLayout(new FlowLayout());
 			
-			// JLayeredPane playArea2 = new JLayeredPane();
-			// playArea2.setPreferredSize(new Dimension(120, 170));
-	   		// playArea2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			// center.add(playArea2);
-			// JLayeredPane playArea3 = new JLayeredPane();
-			// playArea3.setPreferredSize(new Dimension(120, 170));
-	   		// playArea3.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			// center.add(playArea3);
-			// JLayeredPane playArea4 = new JLayeredPane();
-			// playArea4.setPreferredSize(new Dimension(120, 170));
-	   		// playArea4.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-			// center.add(playArea4);
 
-			//Stack<Card> testStack = new Stack<Card>();
-			// testStack.add(new Card(2, Card.Suit.Diamonds));
-			// testStack.add(new Card(5, Card.Suit.Diamonds));
-			// playArea1.setLayout(new FlowLayout());
-			// playArea1.add(drawPile(testStack));
 
 			this.setVisible(true);
 			updateDisplay();
@@ -195,22 +223,29 @@ private JButton endTurn;
 			
 		private void renderPlayerHand(java.util.List<Card> hand, JPanel panel, boolean faceUp) {
 			panel.removeAll();
-			// Use null layout or FlowLayout with gaps; simplest: FlowLayout with small horizontal gap
-			panel.setLayout(new FlowLayout(FlowLayout.LEFT, -HAND_OVERLAP, 0));
-
-			for (Card c : hand) {
-				if (faceUp) c.show(); else c.hide();
-				// Ensure the Card component uses the consistent size
-				c.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
-				c.setSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
-				// Add mouse listener so user can interact
-				c.addMouseListener(this);
-				panel.add(c);
-			}
-			panel.revalidate();
-			panel.repaint();
+		
+		// Adjust overlap based on number of cards
+		int overlap = HAND_OVERLAP;
+		if (hand.size() > 8) {
+			// More cards = closer together
+			overlap = Math.max(20, CARD_WIDTH - (600 / hand.size()));
 		}
+		
+		// Use null layout or FlowLayout with gaps; simplest: FlowLayout with small horizontal gap
+		panel.setLayout(new FlowLayout(FlowLayout.LEFT, -overlap, 0));
 
+		for (Card c : hand) {
+			if (faceUp) c.show(); else c.hide();
+			// Ensure the Card component uses the consistent size
+			c.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
+			c.setSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
+			// Add mouse listener so user can interact
+			c.addMouseListener(this);
+			panel.add(c);
+		}
+		panel.revalidate();
+		panel.repaint();
+	}
 
 
 	   private void updateDisplay() {
@@ -222,8 +257,12 @@ private JButton endTurn;
 			west.add(new JLabel("Deck"));
 			Stack<Card> deckPile = new Stack();
 			game.getTrumpCard().show();
-			deckPile.add(game.getTrumpCard());
-			deckPile.add(game.getTopDeckCard());
+            if(!game.deck.isEmpty()){
+                deckPile.add(game.getTrumpCard());
+            }
+			
+            if(game.deck.size()>1)
+                deckPile.add(game.getTopDeckCard());
 			west.add(drawPile(deckPile));
 
 			boolean southFaceUp = viewHandsButtonSouth != null && viewHandsButtonSouth.isSelected();
@@ -231,20 +270,42 @@ private JButton endTurn;
 			
             renderPlayerHand(game.getHand1(), playerOne, southFaceUp);
             renderPlayerHand(game.getHand2(), playerTwo, northFaceUp);
+            
+            // Update turn indicator
+            if (game.isPlayer1Attacking()) {
+                turnIndicator.setText("Player 1 Attacking");
+            } else {
+                turnIndicator.setText("Player 2 Attacking");
+            }
+            
+            // Update graveyard display
+            graveyardPanel.removeAll();
+            for (Card c : game.getGraveyard()) {
+                c.hide();  // Show cards face down in graveyard
+                c.setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
+                graveyardPanel.add(c);
+            }
+            graveyardPanel.revalidate();
+            graveyardPanel.repaint();
+            
 			center.removeAll();
 			for(Stack<Card> stack:game.getColumns()){
 				JLayeredPane playArea = new JLayeredPane();
-				playArea.setPreferredSize(new Dimension(120, 170));
+				playArea.setPreferredSize(new Dimension(120, 200));
 				playArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				int yoffset=0;
 				for(Card c: stack){
-					c.setBounds(0, yoffset, 120, 170);
-					playArea.add(c);
+
+					c.show();
+					c.setBounds(0, yoffset, 120,170);
+					c.addMouseListener(this);  // Add mouse listener so cards can be clicked for defense
+					playArea.add(c, 0);
 					yoffset+=50;
 				}
 				
 				center.add(playArea);
 			}
+			repaint();
 			
     	}
     
@@ -297,27 +358,63 @@ private JButton endTurn;
 	@Override
     public void mouseReleased(MouseEvent arg0) {
 		Card selectedCard = (Card)arg0.getComponent();
+        
+        // Validate that the selected card belongs to the correct player
+        boolean cardInHand1 = game.getHand1().contains(selectedCard);
+        boolean cardInHand2 = game.getHand2().contains(selectedCard);
+        
+        // Get the current attacking and defending players
+        int attackingPlayer = game.getAttackingPlayer();
+        int defendingPlayer = game.getDefendingPlayer();
+        
+      
+        
+        
 
-        if(card1==null){
-             card1 = selectedCard;
-             card1.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.red));
-			 repaint();
-			 return;
-         }
+        // Handle card selection and actions
+        if (card1 == null) {
+            // First card selected
+            card1 = selectedCard;
+            card1.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.red));
+            repaint();
+            return;
+        } else {
+            // Second card selected - determine the action
+            card2 = selectedCard;
 
-         else {
-			
-		
-             card2 = selectedCard;
-
-			game.doMove(card1, card2);
-			System.out.println("do move");
-				updateDisplay();
-				
-			}
-              card1 = null; // reset the card variables so you're ready for another move
-              card2 = null;
-
+            // Determine if this is an attack or defense move
+            boolean c1InAttackerHand = (attackingPlayer == 1 && cardInHand1) || (attackingPlayer == 2 && cardInHand2);
+            boolean isCard2OnTable = false;
+            
+            if (card2 != null) {
+                for (Stack<Card> column : game.getColumns()) {
+                    if (column.contains(card2)) {
+                        isCard2OnTable = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Switch-based action handler
+            if (c1InAttackerHand && !isCard2OnTable) { 
+                // Attacker playing a new attack card
+                System.out.println("Player " + attackingPlayer + " attacking with " + card1);
+                game.doMove(card1, null);
+            } else if (!c1InAttackerHand && isCard2OnTable) {
+                // Defender playing a defense card against an attack card
+                System.out.println("Player " + defendingPlayer + " defending against " + card2 + " with " + card1);
+                game.doMove(card1, card2);
+            } else {
+                System.out.println("Invalid move!");
+            }
+            
+            // Clear borders and reset
+            card1.setBorder(BorderFactory.createEmptyBorder());
+            updateDisplay();
+        }
+        
+        card1 = null;
+        card2 = null;
     }
 
 
@@ -360,37 +457,37 @@ private JButton endTurn;
             return;
         }
 
+        // Player 1 take cards button
+        if (arg0.getSource() == takeCardsSouth) {
+            if (game.getDefendingPlayer() == 1) {
+                game.defenderTakesCards();
+                game.endTurn();
+                updateDisplay();
+            } else {
+                System.out.println("Only the defending player can take cards!");
+            }
+            return;
+        }
 
+        // Player 2 take cards button
+        if (arg0.getSource() == takeCardsNorth) {
+            if (game.getDefendingPlayer() == 2) {
+                game.defenderTakesCards();
+                game.endTurn();
+                updateDisplay();
+            } else {
+                System.out.println("Only the defending player can take cards!");
+            }
+            return;
+        }
 
-		
-		if(arg0.getSource()==endTurn){
-			
-			}
+		if (arg0.getSource() == endTurn) {
+			game.endTurn();
+			updateDisplay();
+			return;
+		}
 
         // other actions...
     }
-	// private void update(){
-	// 	columns.removeAll();
-	// 	topColumns.removeAll();
-
-	// 	ArrayList<Stack<Card>> allColumns = game.getColumns();
-	// 	for(Stack<Card> stack:allColumns){
-	// 		topColumns.add(drawPile(stack,false));
-	// 	}
-	// 	columns.add(drawDeck(game.getDeck()));
-
-	// 	columns.add(drawPile(game.getPile(), true));
-
-	// 	columns.add(drawFinal(game.hearts, "hearts"));
-
-	// 	columns.add(drawFinal(game.spades, "spades"));
-
-	// 	columns.add(drawFinal(game.diamonds, "diamonds"));
-
-	// 	columns.add(drawFinal(game.clubs, "clubs"));
-
-	// 	System.out.println("updating");
-	// 	this.revalidate();
-    // 	this.repaint();
-	// }
+	
 }
