@@ -10,7 +10,7 @@ public class Durak {
 	ArrayList<Stack <Card>> columns;
 	Queue<Card> deck;
 	ArrayList<Card> graveyard;
-	boolean isGameOver = false;
+	public int isGameOver = 0;
     //Is player 1 attacking? When true, P1 attacks and P2 defends. When false, P2 attacks and P1 defends.
 	boolean isPlayer1Attacking = true;
     boolean turn;
@@ -66,7 +66,7 @@ public class Durak {
         shuffleDeck();
         pickTrump();          // sets trumpCard (bottom card of deck)
         dealInitialHands(6);
-		//shortCutEnd();
+		shortCutEnd();
     }
 
 
@@ -132,13 +132,11 @@ public class Durak {
 	//the part of your program that's in charge of game rules goes here.
 
 	public void gameOver(){
-		if(hand1.size()==0){
-            isGameOver=true;
-            loser=false;
-        }else if (hand2.size()==0){
-			isGameOver=true;
-            loser=true;
-			//something something gui game over
+		if(hand1.size()==0&&deck.isEmpty()){
+            isGameOver=1;
+            
+        }else if (hand2.size()==0&&deck.isEmpty()){
+			isGameOver=2;
 		}
 		
 	}
@@ -210,9 +208,13 @@ public class Durak {
 
     
     public void endTurn(){
+        if(!canEndTurn()){
+            return;
+        }
+
         // Move all cards from table to graveyard
         for (Stack<Card> column : columns) {
-            while (!column.isEmpty() && canEndTurn()) {
+            while (!column.isEmpty()) {
                 graveyard.add(column.pop());
             }
         }
@@ -265,14 +267,16 @@ public class Durak {
         return tableValues.contains(card.value);
     }
 
-
+    // public void endTurn(){
+    //     isAttacking =! isAttacking;
+    // }
 
 
     public void doMove(Card c1, Card c2) {
         // Determine which hand c1 came from
         boolean c1InHand1 = hand1.contains(c1);
         boolean c1InHand2 = hand2.contains(c1);
-        
+
         // Determine if c2 is an attack card on the table
         boolean isCard2OnTable = false;
         if (c2 != null) {
@@ -282,7 +286,34 @@ public class Durak {
                     break;
                 }
             }
+            System.out.println("c1InHand1: " + c1InHand1 + ", c1InHand2: " + c1InHand2);
         }
+        
+
+        // if (isAttacking(c1) && c1InHand1) {
+        // // Attack: place c1 on the table
+        // Stack<Card> column = new Stack<>();
+        // c1.show();
+        // column.push(c1);
+        // columns.add(column);
+        // hand1.remove(c1);
+        // System.out.println("Player 1 attacked with " + c1);
+        // return;
+        // }
+        // // If it's player 1's defending turn (not attacking)
+        // else if (!isAttacking(c2) && c1InHand1 && c2 != null) {
+        //     // Defense: c1 defends against c2 (the attack card)
+        //     if (canDefend(c2, c1)) {
+        //         // Find the column with c2 and add c1 as defense
+        //         for (Stack<Card> column : columns) {
+        //             if (column.peek().equals(c2)) {
+        //                 column.push(c1);
+        //                 hand1.remove(c1);
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
 
         // If Player 1 is attacking
         if (isPlayer1Attacking && c1InHand1) {
@@ -354,6 +385,7 @@ public class Durak {
     }
 
 
+    
 	
 
 }

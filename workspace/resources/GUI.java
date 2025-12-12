@@ -252,7 +252,13 @@ private JButton takeCardsNorth;
     		if (game == null) {
 				
 				return;
-	 		}
+	 		} 
+            if (game.isGameOver==1){
+                endGame.setText("Player One Wins!");
+            }
+            else if(game.isGameOver==2){
+                endGame.setText("Player Two Wins!");
+            }
 			west.removeAll();
 			west.add(new JLabel("Deck"));
 			Stack<Card> deckPile = new Stack();
