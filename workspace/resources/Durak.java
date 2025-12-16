@@ -1,3 +1,4 @@
+//Sophia Babayev / 12/16/2025 / Durak Game Implementation
 package resources;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,37 +12,47 @@ public class Durak {
 	Queue<Card> deck;
 	ArrayList<Card> graveyard;
 	public int isGameOver = 0;
-    //Is player 1 attacking? When true, P1 attacks and P2 defends. When false, P2 attacks and P1 defends.
 	boolean isPlayer1Attacking = true;
     boolean turn;
     boolean loser;
 
     
-	//if any player hand is zero, game over
     private ArrayList<Card> hand1;
     private ArrayList<Card> hand2;
 
 
+    // Pre: None.
+    // Post: Returns player 1's hand. 
 	public java.util.List<Card> getHand1() {
         return java.util.Collections.unmodifiableList(hand1);
     }
 
+    // Pre: None.
+    // Post: Returns player 2's hand. 
     public java.util.List<Card> getHand2() {
         return java.util.Collections.unmodifiableList(hand2);
     }
 
+    // Pre: None.
+    // Post: Returns the graveyard. 
 	public java.util.List<Card> getGraveyard() {
         return java.util.Collections.unmodifiableList(graveyard);
     }
 
+    // Pre: None.
+    // Post: Returns true if player 1 is attacking, false otherwise.
 	public boolean isPlayer1Attacking() {
 		return isPlayer1Attacking;
 	}
 
+    // Pre: None.
+    // Post: Returns 1 if player 1 is attacking, 2 if player 2 is attacking.
 	public int getAttackingPlayer() {
 		return isPlayer1Attacking ? 1 : 2;
 	}
 
+    // Pre: None.
+    // Post: Returns 1 if player 1 is defending, 2 if player 2 is defending.
 	public int getDefendingPlayer() {
 		return isPlayer1Attacking ? 2 : 1;
 	}
@@ -49,12 +60,15 @@ public class Durak {
 	private Card trumpCard;
 
 
+    // Pre: None.
+    // Post: Returns the table columns.
     public List<Stack<Card>> getColumns() {
         return Collections.unmodifiableList(columns);
     }
 
 
-	//Constructor
+	// Pre: None.
+	// Post: Sets up a new game with deck, hands, and trump.
 	public Durak() {
         columns = new ArrayList<>();
         hand1 = new ArrayList<>();
@@ -66,10 +80,12 @@ public class Durak {
         shuffleDeck();
         pickTrump();          // sets trumpCard (bottom card of deck)
         dealInitialHands(6);
-		shortCutEnd();
+		//shortCutEnd();
     }
 
 
+	// Pre: None.
+	// Post: Builds a 36-card deck for Durak.
 	private void Deck() {
         ArrayList<Card> temp = new ArrayList<>();
         for (Card.Suit suit : Card.Suit.values()) {
@@ -84,22 +100,30 @@ public class Durak {
         deck = new LinkedList<>(temp);
     }
 
+	// Pre: Deck must be set up.
+	// Post: Shuffles the deck.
 	private void shuffleDeck() {
 		ArrayList<Card> temp = new ArrayList<>(deck);
 		Collections.shuffle(temp);
 		deck = new LinkedList<>(temp);
 	}
 
+	// Pre: None.
+	// Post: Returns top card without removing it, or null if empty.
 	public Card getTopDeckCard(){
 		return deck.peek();
 	}
 
+	// Pre: Deck must be set up.
+	// Post: Removes 20 cards from deck for quick testing.
     public void shortCutEnd(){
         for(int i=0; i<20; i++){
             deck.poll();
         }
     }
 
+	// Pre: Deck must be set up.
+	// Post: Picks the trump card from the bottom of the deck.
 	private void pickTrump() {
 		if (deck.isEmpty()) {
 			trumpCard = null;
@@ -112,11 +136,15 @@ public class Durak {
 
 	
 
+	// Pre: None.
+	// Post: Returns the trump card, or null if not set.
 	public Card getTrumpCard() {
         return trumpCard;
     }
 
 
+	// Pre: None.
+	// Post: Returns the suit of the trump card, or null if not set.
 	public Card.Suit getTrumpSuit() {
     	if (trumpCard == null) {
         	return null;
@@ -125,23 +153,33 @@ public class Durak {
     	}
 	}
 
+	// Pre: None.
+	// Post: Returns the deck as a list. 
 	public java.util.List<Card> getDeckAsList() {
         return new ArrayList<>(deck);
     }
 
-	//the part of your program that's in charge of game rules goes here.
+	
 
-	public void gameOver(){
-		if(hand1.size()==0&&deck.isEmpty()){
-            isGameOver=1;
-            
-        }else if (hand2.size()==0&&deck.isEmpty()){
-			isGameOver=2;
+	// Pre: None.
+	// Post: Returns winner message if game over, else empty string.
+	public String gameOver(){
+		if(hand1.isEmpty() && deck.isEmpty()) {
+            isGameOver = 1;
+            return "Player 1 wins! Player 2 is the Durak.";
+        }else if (hand2.isEmpty() && deck.isEmpty()) {
+            isGameOver = 1;
+			return "Player 2 wins! Player 1 is the Durak.";
 		}
-		
+        else {
+            isGameOver = 0;
+            return "";
+        }
 	}
 
 
+	// Pre: Deck must be set up.
+	// Post: Deals initial hands to players.
 	private void dealInitialHands(int handSize) {
         for (int i = 0; i < handSize; i++) {
             if (!deck.isEmpty()) hand1.add(deck.poll());
@@ -150,6 +188,8 @@ public class Durak {
     }
 
 
+	// Pre: None.
+	// Post: Returns the top card without removing it, or null if empty.
 	public Card peekTopDeckCard() {
         return deck.peek();
     }
@@ -157,8 +197,8 @@ public class Durak {
 
 
 
-
-
+	// Pre: None.
+	// Post: Draws cards to fill hands to target size.
 	public void replenishHandsTo(int targetSize) {
         while (hand1.size() < targetSize && !deck.isEmpty()) {
             hand1.add(deck.poll());
@@ -171,6 +211,8 @@ public class Durak {
 
 
 
+	// Pre: attack and defense not null.
+	// Post: Returns true if defense beats attack.
     public boolean canDefend(Card attack, Card defense) {
         // if (attack == null || defense == null) return false;
 
@@ -190,13 +232,17 @@ public class Durak {
     }
 
 
+	// Pre: card not null.
+	// Post: Returns true if card can attack.
     public boolean isAttacking(Card card){
         if(card == null) return false;
         
-        // In Durak, any card can be used to attack
+
         return true;
     }
 
+	// Pre: None.
+	// Post: Returns true if all table columns have 2 cards.
     public boolean canEndTurn(){
             for (Stack<Card> column : columns) {
                 if(column.size() != 2){
@@ -206,7 +252,8 @@ public class Durak {
             return true;
     }
 
-    
+	// Pre: canEndTurn() true.
+	// Post: Ends turn, moves cards to graveyard, switches player, replenishes hands.
     public void endTurn(){
         if(!canEndTurn()){
             return;
@@ -231,6 +278,8 @@ public class Durak {
         gameOver();
     }
 
+	// Pre: None.
+	// Post: Defender takes all table cards, switches turn, replenishes hands.
     public void defenderTakesCards() {
         // Defender takes all cards from the table into their hand
         ArrayList<Card> defendingHand = isPlayer1Attacking ? hand2 : hand1;
@@ -249,6 +298,8 @@ public class Durak {
         gameOver();
     }
 
+	// Pre: card not null.
+	// Post: Returns true if card can attack (first or matches table rank).
     public boolean isValidAttackCard(Card card) {
         // First card can be anything, subsequent cards must match values on table
         if (columns.isEmpty()) {
@@ -267,11 +318,10 @@ public class Durak {
         return tableValues.contains(card.value);
     }
 
-    // public void endTurn(){
-    //     isAttacking =! isAttacking;
-    // }
 
 
+	// Pre: c1 in a hand, c2 on table if defending.
+	// Post: Performs attack or defense if valid.
     public void doMove(Card c1, Card c2) {
         // Determine which hand c1 came from
         boolean c1InHand1 = hand1.contains(c1);
@@ -289,31 +339,6 @@ public class Durak {
             System.out.println("c1InHand1: " + c1InHand1 + ", c1InHand2: " + c1InHand2);
         }
         
-
-        // if (isAttacking(c1) && c1InHand1) {
-        // // Attack: place c1 on the table
-        // Stack<Card> column = new Stack<>();
-        // c1.show();
-        // column.push(c1);
-        // columns.add(column);
-        // hand1.remove(c1);
-        // System.out.println("Player 1 attacked with " + c1);
-        // return;
-        // }
-        // // If it's player 1's defending turn (not attacking)
-        // else if (!isAttacking(c2) && c1InHand1 && c2 != null) {
-        //     // Defense: c1 defends against c2 (the attack card)
-        //     if (canDefend(c2, c1)) {
-        //         // Find the column with c2 and add c1 as defense
-        //         for (Stack<Card> column : columns) {
-        //             if (column.peek().equals(c2)) {
-        //                 column.push(c1);
-        //                 hand1.remove(c1);
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // }
 
         // If Player 1 is attacking
         if (isPlayer1Attacking && c1InHand1) {

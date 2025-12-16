@@ -1,3 +1,4 @@
+//Sophia Babayev / 12/16/2025 / Add all user interactions to the screen
 package resources;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -33,12 +34,12 @@ private static final int CARD_WIDTH = 120;
 private static final int CARD_HEIGHT = 150;
 private static final int HAND_OVERLAP = CARD_WIDTH / 4;
 
-private boolean dumfixer = false;
+
 
 
 private JLabel trumpLabel;
 private JLabel endGame;
-private JLabel turnIndicator; // shows whose turn it is
+private JLabel turnIndicator; 
 private JPanel graveyardPanel;
 
 private JToggleButton viewHandsButtonSouth;
@@ -52,6 +53,8 @@ private JButton takeCardsNorth;
 
 
 
+    // Pre: game not null.
+    // Post: Sets up the GUI window and panels.
     public GUI(Durak game){
 	   this.game= game;
         //Create and set up the window.
@@ -202,6 +205,8 @@ private JButton takeCardsNorth;
 
 
 
+		// Pre: stackIn not null.
+		// Post: Returns a JLayeredPane displaying the stack of cards.
 		public JLayeredPane drawPile(Stack<Card> stackIn) {
 				JLayeredPane pane = new JLayeredPane();
 				Object[] cards = stackIn.toArray(); 
@@ -221,6 +226,8 @@ private JButton takeCardsNorth;
 		}
 			
 			
+		// Pre: hand and panel not null.
+		// Post: Renders the hand on the panel, face up or down.
 		private void renderPlayerHand(java.util.List<Card> hand, JPanel panel, boolean faceUp) {
 			panel.removeAll();
 		
@@ -248,6 +255,8 @@ private JButton takeCardsNorth;
 	}
 
 
+	   // Pre: None.
+	   // Post: Updates the GUI to reflect the current game state.
 	   private void updateDisplay() {
     		if (game == null) {
 				
@@ -265,6 +274,11 @@ private JButton takeCardsNorth;
 			game.getTrumpCard().show();
             if(!game.deck.isEmpty()){
                 deckPile.add(game.getTrumpCard());
+            }
+
+            String gameOverMsg = game.gameOver();
+            if (!gameOverMsg.isEmpty()) {
+                JOptionPane.showMessageDialog(this, gameOverMsg);
             }
 			
             if(game.deck.size()>1)
@@ -314,34 +328,14 @@ private JButton takeCardsNorth;
 			repaint();
 			
     	}
-    
-        
-    
-			
+       
 
-
-       /*******
-        * This is just a test to make sure images are being read correctly on your machine. Please replace
-        * once you have confirmed that the card shows up properly. The code below should allow you to play the solitare
-        * game once it's fully created.
-        */
-       //Card card = new Card(2, Card.Suit.Diamonds);
-       //System.out.println(card);
-       //this.add(card);    
-
-        
-    
 	@Override
 	public void mouseDragged(MouseEvent arg0) {
 		
 		
 	}
 
-	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		
-		
-	}
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
@@ -349,11 +343,13 @@ private JButton takeCardsNorth;
 		
 	}
 
+
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		
 		
 	}
+
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
@@ -361,6 +357,8 @@ private JButton takeCardsNorth;
 		
 	}
 
+	// Pre: None.
+	// Post: Handles mouse release events for card selection and actions.
 	@Override
     public void mouseReleased(MouseEvent arg0) {
 		Card selectedCard = (Card)arg0.getComponent();
@@ -424,7 +422,6 @@ private JButton takeCardsNorth;
     }
 
 
-
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
@@ -433,6 +430,8 @@ private JButton takeCardsNorth;
 
 	
 
+	// Pre: None.
+	// Post: Handles action events from buttons.
 	@Override
     public void actionPerformed(ActionEvent arg0) {
         // south toggle controls only playerOne
@@ -493,7 +492,16 @@ private JButton takeCardsNorth;
 			return;
 		}
 
-        // other actions...
+       
+    }
+
+
+
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
     }
 	
 }
