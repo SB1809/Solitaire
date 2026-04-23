@@ -11,6 +11,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import java.net.Socket;
 import java.net.URL;
 import java.util.Stack;
 
@@ -50,16 +54,28 @@ private JButton endTurn;
 private JButton takeCardsSouth;
 private JButton takeCardsNorth;
 
-
+private Socket connection;
+private ObjectOutputStream oos;
+private ObjectInputStream ois;
 
 
 
 
     // Pre: game not null.
     // Post: Sets up the GUI window and panels.
-    public GUI(Durak game){
-	   this.game= game;
+    public GUI(){
+
+
+        //TODO
+        //make connection to the server
+        //get the game from the server as a message 
+	   this.game= //game from server goes here;
         //Create and set up the window.
+
+
+
+
+
        setTitle("Durak");
        setSize(900,550);
        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -201,7 +217,10 @@ private JButton takeCardsNorth;
 
 
 			this.setVisible(true);
-			updateDisplay();
+			while(true){
+                game = (Durak)ois.readObject();
+                updateDisplay();
+            }
 		}
 
 
@@ -260,6 +279,10 @@ private JButton takeCardsNorth;
 	   // Pre: None.
 	   // Post: Updates the GUI to reflect the current game state.
 	   private void updateDisplay() {
+
+        //ask the server for "the game"
+        //TODO: add a if statement that says "only do the stuff below once you receive a new Durak object for game from server."
+    	if(0!=1){	
     		if (game == null) {
 				
 				return;
@@ -328,7 +351,7 @@ private JButton takeCardsNorth;
 				center.add(playArea);
 			}
 			repaint();
-			
+        }
     	}
        
 
@@ -416,7 +439,9 @@ private JButton takeCardsNorth;
             
             // Clear borders and reset
             card1.setBorder(BorderFactory.createEmptyBorder());
-            updateDisplay();
+            
+            //send message to oos with the new state of the game
+
         }
         
         card1 = null;
@@ -507,3 +532,19 @@ private JButton takeCardsNorth;
     }
 	
 }
+
+/* try {
+            // Make connection to the server
+            InetAddress host = InetAddress.getLocalHost();
+            this.connection = new Socket(host.getHostName(), 9876);
+            
+            // Create streams for communication
+            this.oos = new ObjectOutputStream(connection.getOutputStream());
+            this.ois = new ObjectInputStream(connection.getInputStream());
+            
+            // Get the game from the server as a message
+            this.game = (Durak) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error connecting to server: " + e.getMessage());
+            e.printStackTrace();
+        } */

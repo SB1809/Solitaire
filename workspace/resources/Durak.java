@@ -7,7 +7,12 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
-public class Durak {
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Durak implements Serializable {
 	ArrayList<Stack <Card>> columns;
 	Queue<Card> deck;
 	ArrayList<Card> graveyard;
@@ -21,7 +26,14 @@ public class Durak {
     private ArrayList<Card> hand2;
 
 
-    // Pre: None.
+public void swapHands(){
+     ArrayList<Card> temp = hand1;
+    hand1 = hand2;
+    hand2 = temp;
+}
+
+
+// Pre: None.
     // Post: Returns player 1's hand. 
 	public java.util.List<Card> getHand1() {
         return java.util.Collections.unmodifiableList(hand1);
@@ -81,6 +93,10 @@ public class Durak {
         pickTrump();          // sets trumpCard (bottom card of deck)
         dealInitialHands(6);
 		//shortCutEnd();
+
+        while(true){
+        //TODO: Listener, add connections
+        }
     }
 
 
